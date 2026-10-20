@@ -21,6 +21,17 @@ The system will be evaluated against conventional scheduling strategies to deter
 
 **Important:** The initial dataset is synthetic and is used only for development and testing. It is not real household measurement data.
 
+## Phase 2: Real Household Data
+
+- Added a chunk-based REFIT preprocessing pipeline.
+- Resampled selected household readings to 15-minute intervals.
+- Recorded sampling coverage and retained missing-value information.
+- Generated a demand chart from processed REFIT measurements.
+
+The selected household is House 1. Raw dataset files are stored locally
+and excluded from Git version control. Processed outputs and results
+will be reviewed before being committed.
+
 ## Technology Stack
 
 - Python
