@@ -36,6 +36,20 @@ Raw REFIT files should remain local and excluded from Git. Processed datasets sh
 - Initial evaluation targets House 1 only. This does **not** establish generalization to other homes; multi-household evaluation is planned.
 - The script requires `data/processed/refit_house1_15min.csv` to exist locally before it can run.
 
+
+## Phase 4: Electricity-Demand Forecasting
+
+- Prepared time-based features from processed REFIT House 1 readings.
+- Implemented a same-time-yesterday baseline.
+- Trained a Random Forest regression model.
+- Used a chronological train/test split to evaluate future-period predictions.
+- Compared both approaches using Mean Absolute Error (MAE) and Root Mean Squared Error (RMSE).
+- Saved the evaluation metrics and forecast comparison chart under `reports/`.
+
+The experiment's measured results are stored in
+`reports/forecast_metrics.json`. Performance conclusions should
+be based on those results and the selected test period.
+
 ## Technology Stack
 
 - Python
