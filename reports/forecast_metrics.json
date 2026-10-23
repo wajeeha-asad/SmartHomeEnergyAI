@@ -1,0 +1,19 @@
+{
+  "dataset": "REFIT House 1",
+  "target": "aggregate_power_w",
+  "interval": "15 minutes",
+  "test_fraction": 0.2,
+  "test_start": "2015-03-04 17:00:00",
+  "test_end": "2015-07-10 11:45:00",
+  "training_rows": 37900,
+  "testing_rows": 8680,
+  "baseline_same_time_yesterday": {
+    "MAE_W": 182.6295,
+    "RMSE_W": 375.6487
+  },
+  "random_forest": {
+    "MAE_W": 119.5767,
+    "RMSE_W": 237.7778
+  },
+  "mae_improvement_percent_vs_baseline": 34.52
+}
