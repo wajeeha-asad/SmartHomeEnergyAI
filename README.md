@@ -10,34 +10,38 @@ The system will be evaluated against conventional scheduling strategies to deter
 
 ## Current Progress
 
-**Phase 1: Project Setup and Synthetic Energy Simulation**
+### Phase 1: Project Setup and Synthetic Energy Simulation
 
 - Created a Python virtual environment.
-- Installed Pandas, NumPy, and Matplotlib.
 - Generated a seven-day synthetic household electricity dataset.
-- Simulated five load components: background household load, refrigerator, washing machine, air conditioner, and water heater.
-- Calculated interval energy consumption, average power, and peak power.
-- Inspected the dataset and generated an electricity-demand chart.
+- Simulated background household load, refrigerator, washing machine, air conditioner, and water heater.
+- Inspected the dataset and generated a demand chart.
 
-**Important:** The initial dataset is synthetic and is used only for development and testing. It is not real household measurement data.
+**Research integrity:** the synthetic dataset is for development and is not real household measurement data.
 
-## Phase 2: Real Household Data
+### Phase 2: Real Household Data
 
-- Added a chunk-based REFIT preprocessing pipeline.
-- Resampled selected household readings to 15-minute intervals.
+- Added chunk-based REFIT preprocessing.
+- Resampled House 1 readings to 15-minute intervals.
 - Recorded sampling coverage and retained missing-value information.
-- Generated a demand chart from processed REFIT measurements.
+- Added data-inspection and visualization scripts.
 
-The selected household is House 1. Raw dataset files are stored locally
-and excluded from Git version control. Processed outputs and results
-will be reviewed before being committed.
+Raw REFIT files should remain local and excluded from Git. Processed datasets should only be committed after reviewing licensing, size, and data quality.
+
+### Phase 3: Initial Forecasting Pipeline
+
+- Added `src/forecast_energy.py` to compare a same-time-previous-day baseline with a Random Forest regressor.
+- Uses a chronological train/test split rather than randomly mixing time-series observations.
+- Calculates MAE and RMSE and saves predictions, metrics, a comparison plot, and a serialized model.
+- Initial evaluation targets House 1 only. This does **not** establish generalization to other homes; multi-household evaluation is planned.
+- The script requires `data/processed/refit_house1_15min.csv` to exist locally before it can run.
 
 ## Technology Stack
 
 - Python
 - Pandas and NumPy
 - Matplotlib
-- Scikit-learn (planned)
+- Scikit-learn and Joblib
 - Google OR-Tools (planned)
 - FastAPI (planned)
 - React and Vite (planned)
@@ -48,13 +52,19 @@ will be reviewed before being committed.
 ```text
 SmartHomeEnergyAI/
 ├── data/
-│   └── simulated_household.csv
-├── reports/
-│   └── sample_demand.png
+│   ├── simulated_household.csv
+│   └── processed/                 # local processed REFIT data; verify .gitignore
+├── models/                        # generated locally by forecasting script
+├── reports/                       # generated charts and evaluation outputs
 ├── src/
 │   ├── generate_sample_data.py
 │   ├── inspect_data.py
-│   └── plot_energy.py
+│   ├── plot_energy.py
+│   ├── inspect_refit.py
+│   ├── preprocess_refit.py
+│   ├── inspect_processed_refit.py
+│   ├── plot_processed_refit.py
+│   └── forecast_energy.py
 ├── .gitignore
 ├── requirements.txt
 └── README.md
@@ -64,14 +74,12 @@ SmartHomeEnergyAI/
 
 ### 1. Clone the repository
 
-```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
-cd YOUR_REPOSITORY_NAME
+```powershell
+git clone https://github.com/wajeeha-asad/SmartHomeEnergyAI.git
+cd SmartHomeEnergyAI
 ```
 
 ### 2. Create and activate a virtual environment
-
-On Windows PowerShell:
 
 ```powershell
 python -m venv .venv
@@ -84,32 +92,47 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-### 4. Generate the synthetic dataset
+### 4. Generate and inspect the synthetic dataset
 
 ```powershell
 python src/generate_sample_data.py
-```
-
-### 5. Inspect the data and create a chart
-
-```powershell
 python src/inspect_data.py
 python src/plot_energy.py
 ```
 
+### 5. Preprocess REFIT data
+
+Download REFIT from its official dataset page, extract it locally, and configure the input path in `src/preprocess_refit.py` to match your local file. Then run:
+
+```powershell
+python src/preprocess_refit.py
+python src/inspect_processed_refit.py
+python src/plot_processed_refit.py
+```
+
+### 6. Train and evaluate the initial forecasting model
+
+Ensure `data/processed/refit_house1_15min.csv` exists and contains `timestamp` and `aggregate_power_w` columns. Then run:
+
+```powershell
+python src/forecast_energy.py
+```
+
+The script writes local outputs to `models/` and `reports/`. Review the metrics and generated chart before making any performance claims.
+
 ## Planned Research and Development
 
-1. Acquire and preprocess real household electricity measurements.
-2. Build and evaluate short-term electricity-demand forecasting models.
+1. Validate preprocessing across additional REFIT households.
+2. Compare forecasting models with leakage-safe chronological evaluation.
 3. Implement rule-based and constraint-optimized appliance scheduling.
-4. Integrate the forecasting and scheduling modules through a Python API.
+4. Integrate forecasting and scheduling through a Python API.
 5. Develop an interactive 3D smart-home digital twin.
-6. Compare forecasting accuracy, peak demand, energy consumption, cost, and operational constraints.
+6. Compare forecasting accuracy, peak demand, energy use, cost (when tariff assumptions are defined), and operational constraints.
 
 ## Research Integrity
 
-Real measurements, synthetic data, and simulated scenarios will be clearly distinguished. Performance claims will be based on reproducible experiments and held-out evaluation data.
+Real measurements, synthetic data, and simulated scenarios will be clearly distinguished. Performance claims will be based on reproducible experiments and held-out evaluation data. Shifting appliance usage can reduce peak demand or cost under suitable constraints, but does not automatically reduce total energy consumption.
 
 ## Project Status
 
-In development — initial Python setup, synthetic energy simulation, data inspection, and demand visualization completed.
+In development — synthetic data simulation, REFIT preprocessing tools, and an initial forecasting pipeline are in place. The forecasting script has not yet been verified against the user's local processed dataset; run it locally and inspect outputs before reporting results.
