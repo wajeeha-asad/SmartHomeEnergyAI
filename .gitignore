@@ -26,3 +26,10 @@ data/external/
 
 # Temporary files
 *.log
+
+
+# Trained model files
+models/
+
+# Generated test predictions
+reports/forecast_predictions.csv
